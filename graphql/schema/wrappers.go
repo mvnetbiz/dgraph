@@ -271,8 +271,7 @@ type FieldDefinition interface {
 	IsID() bool
 	IsExternal() bool
 	HasIDDirective() bool
-	DefaultAddValue() interface{}
-	DefaultUpdateValue() interface{}
+	GetDefaultValue(action string) interface{}
 	HasInterfaceArg() bool
 	Inverse() FieldDefinition
 	WithMemberType(string) FieldDefinition
@@ -2347,26 +2346,19 @@ func (fd *fieldDefinition) IsID() bool {
 	return isID(fd.fieldDef)
 }
 
-func (fd *fieldDefinition) DefaultAddValue() interface{} {
+func (fd *fieldDefinition) GetDefaultValue(action string) interface{} {
 	if fd.fieldDef == nil {
 		return nil
 	}
-	return getDefaultValue(fd.fieldDef, "add")
+	return getDefaultValue(fd.fieldDef, action)
 }
 
-func (fd *fieldDefinition) DefaultUpdateValue() interface{} {
-	if fd.fieldDef == nil {
-		return nil
-	}
-	return getDefaultValue(fd.fieldDef, "update")
-}
-
-func getDefaultValue(fd *ast.FieldDefinition, name string) interface{} {
-        dir := fd.Directives.ForName(defaultDirective)
+func getDefaultValue(fd *ast.FieldDefinition, action string) interface{} {
+	dir := fd.Directives.ForName(defaultDirective)
 	if dir == nil {
 		return nil
 	}
-        arg := dir.Arguments.ForName(name)
+	arg := dir.Arguments.ForName(action)
 	if arg == nil {
 		return nil
 	}
