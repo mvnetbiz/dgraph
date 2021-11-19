@@ -19,12 +19,14 @@ package schema
 import (
 	"bytes"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"net/http"
 	"net/url"
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/dgraph-io/dgraph/graphql/authorization"
 	"github.com/dgraph-io/gqlparser/v2/parser"
@@ -2367,8 +2369,11 @@ func getDefaultValue(fd *ast.FieldDefinition, action string) interface{} {
 		return nil
 	}
 	if value.Raw == "$now" {
-		// return time.Now().Format(time.RFC3339)
-		return "2019-10-12T07:20:50.52Z"
+		if flag.Lookup("test.v") == nil {
+			return time.Now().Format(time.RFC3339)
+		} else {
+			return "2000-01-01T00:00:00.00Z"
+		}
 	}
 	return value.Raw
 }
